@@ -1,6 +1,7 @@
-// This is the boilerplate code given for you
-// You can modify this code
-// Product data
+const cartList = document.getElementById("cart-list");
+const productList = document.getElementById("product-list");
+const clearCartButton = document.getElementById("clear-cart-btn");
+
 const products = [
   { id: 1, name: "Product 1", price: 10 },
   { id: 2, name: "Product 2", price: 20 },
@@ -9,30 +10,48 @@ const products = [
   { id: 5, name: "Product 5", price: 50 },
 ];
 
-// DOM elements
-const productList = document.getElementById("product-list");
 
-// Render product list
 function renderProducts() {
   products.forEach((product) => {
     const li = document.createElement("li");
     li.innerHTML = `${product.name} - $${product.price} <button class="add-to-cart-btn" data-id="${product.id}">Add to Cart</button>`;
     productList.appendChild(li);
   });
+
+  const addToCartButtons = document.querySelectorAll(".add-to-cart-btn");
+  addToCartButtons.forEach((button) => {
+    button.addEventListener("click", (event) => {
+      const productId = parseInt(event.target.getAttribute("data-id"));
+      addToCart(productId);
+    });
+  });
 }
 
-// Render cart list
-function renderCart() {}
+function renderCart() {
+  cartList.innerHTML = "";
+  const currentCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+  currentCart.forEach((product) => {
+    cartList.innerHTML += `<li>${product.name} - $${product.price}</li>`;
+  });
+}
 
-// Add item to cart
-function addToCart(productId) {}
+function addToCart(productId) {
+  const prod = products.find((product) => product.id === productId);
+  const currentCart = JSON.parse(sessionStorage.getItem("cart")) || [];
+  
+  currentCart.push(prod);
+  sessionStorage.setItem("cart", JSON.stringify(currentCart));
+  cartList.innerHTML += `<li>${prod.name} - $${prod.price}</li>`;
+}
 
-// Remove item from cart
 function removeFromCart(productId) {}
 
-// Clear cart
-function clearCart() {}
+function clearCart() {
+  sessionStorage.removeItem("cart");
+  cartList.innerHTML = "";
+}
 
-// Initial render
+clearCartButton.addEventListener("click", clearCart);
+
 renderProducts();
 renderCart();
